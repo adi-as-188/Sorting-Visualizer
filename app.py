@@ -113,9 +113,25 @@ def selection_sort():
     st.session_state.updates = ret
 
 
+# insertion sort
+def insertion_sort():
+    arr = [i for i in st.session_state.y]
+    ret = []
+    ret.append(("l", 0, "blue", "green"))
+    for i in range(1, len(arr)):
+        ret.append(("l", i, "blue", "yellow"))
+        j = i
+        while j > 0 and arr[j] < arr[j-1]:
+            ret.append(("s", j, j-1))
+            arr[j], arr[j-1] = arr[j-1], arr[j]
+            j -= 1
+        ret.append(("l", j, "yellow", "green"))
+    st.session_state.updates = ret
+
+
 # dropdown to select algorithm
 with algo:
-    algorithm = st.selectbox("Choose algorithm:", ["Bubble Sort", "Selection Sort"])
+    algorithm = st.selectbox("Choose algorithm:", ["Bubble Sort", "Selection Sort", "Insertion Sort"])
     match algorithm:
         case "Bubble Sort":
             if st.session_state.alg != "Bubble":
@@ -127,3 +143,8 @@ with algo:
                 st.session_state.alg = "Selection"
                 st.session_state.i = 0
                 selection_sort()
+        case "Insertion Sort":
+            if st.session_state.alg != "Insertion":
+                st.session_state.alg = "Insertion"
+                st.session_state.i = 0
+                insertion_sort()
