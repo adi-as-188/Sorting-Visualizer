@@ -16,7 +16,7 @@ placeholder = st.empty()
 
 # draw initial plot
 fig = go.Figure(data=[go.Bar(x = st.session_state.x, y = st.session_state.y, marker_color = st.session_state.color)])
-placeholder.plotly_chart(fig, use_container_width=True, element_id=st.session_state.num)
+placeholder.plotly_chart(fig, use_container_width=True, key=st.session_state.num)
 
 # buttons for interaction
 algo, left, right, auto = st.columns(4)
@@ -31,44 +31,41 @@ if left.button("Previous") and st.session_state.i > 0:
     st.session_state.i -= 1
     task = st.session_state.updates[st.session_state.i]
     if task[0] == "l":
-        st.session_state.color[task[1]] = task[2]
-        if len(task) > 4:
-            st.session_state.color[task[4]] = task[5]
+        for i in range(1, len(task), 3):
+            st.session_state.color[task[i]] = task[i+1]
     else:
         st.session_state.y[task[1]], st.session_state.y[task[2]] = st.session_state.y[task[2]], st.session_state.y[task[1]]
         st.session_state.color[task[1]], st.session_state.color[task[2]] = st.session_state.color[task[2]], st.session_state.color[task[1]]
     fig = go.Figure(data=[go.Bar(x = st.session_state.x, y = st.session_state.y, marker_color = st.session_state.color)])
     st.session_state.num += 1
-    placeholder.plotly_chart(fig, use_container_width=True, element_id=st.session_state.num)
+    placeholder.plotly_chart(fig, use_container_width=True, key=st.session_state.num)
 # button for next
 if right.button("Next") and st.session_state.i < len(st.session_state.updates):
     task = st.session_state.updates[st.session_state.i]
     if task[0] == "l":
-        st.session_state.color[task[1]] = task[3]
-        if len(task) > 4:
-            st.session_state.color[task[4]] = task[6]
+        for i in range(1, len(task), 3):
+            st.session_state.color[task[i]] = task[i+2]
     else:
         st.session_state.y[task[1]], st.session_state.y[task[2]] = st.session_state.y[task[2]], st.session_state.y[task[1]]
         st.session_state.color[task[1]], st.session_state.color[task[2]] = st.session_state.color[task[2]], st.session_state.color[task[1]]
     st.session_state.i += 1
     fig = go.Figure(data=[go.Bar(x = st.session_state.x, y = st.session_state.y, marker_color = st.session_state.color)])
     st.session_state.num += 1
-    placeholder.plotly_chart(fig, use_container_width=True, element_id=st.session_state.num)
+    placeholder.plotly_chart(fig, use_container_width=True, key=st.session_state.num)
 # button to automatically complete the rest
 if auto.button("Sort"):
     while st.session_state.i < len(st.session_state.updates):
         task = st.session_state.updates[st.session_state.i]
         if task[0] == "l":
-            st.session_state.color[task[1]] = task[3]
-            if len(task) > 4:
-                st.session_state.color[task[4]] = task[6]
+            for i in range(1, len(task), 3):
+                st.session_state.color[task[i]] = task[i+2]
         else:
             st.session_state.y[task[1]], st.session_state.y[task[2]] = st.session_state.y[task[2]], st.session_state.y[task[1]]
             st.session_state.color[task[1]], st.session_state.color[task[2]] = st.session_state.color[task[2]], st.session_state.color[task[1]]
         st.session_state.i += 1
         fig = go.Figure(data=[go.Bar(x = st.session_state.x, y = st.session_state.y, marker_color = st.session_state.color)])
         st.session_state.num += 1
-        placeholder.plotly_chart(fig, use_container_width=True, element_id=st.session_state.num)
+        placeholder.plotly_chart(fig, use_container_width=True, key=st.session_state.num)
         time.sleep(0.1)
 
 
@@ -90,12 +87,43 @@ def bubble_sort():
     st.session_state.updates = ret
 
 
+# selection sort
+def selection_sort():
+    arr = [i for i in st.session_state.y]
+    ret = []
+    for i in range(len(arr)):
+        ret.append(("l", i, "blue", "orange"))
+        s = i
+        for j in range(i + 1, len(arr)):
+            if arr[j] < arr[s]:
+                if s == j-1:
+                    ret.append(("l", j, "blue", "orange", s, "orange", "blue"))
+                else:
+                    ret.append(('l', j, "blue", "orange", j-1, "yellow", "blue", s, "orange", "blue"))
+                s = j
+            elif s == j-1:
+                ret.append(("l", j, "blue", "yellow"))
+            else:
+                ret.append(('l', j, "blue", "yellow", j-1, "yellow", "blue"))
+        if s != len(arr) - 1:
+            ret.append(("l", len(arr) - 1, "yellow", "blue"))
+        arr[i], arr[s] = arr[s], arr[i]
+        ret.append(("s", i, s))
+        ret.append(("l", i, "orange", "green"))
+    st.session_state.updates = ret
+
+
 # dropdown to select algorithm
 with algo:
-    algorithm = st.selectbox("Choose algorithm:", ["Bubble Sort"])
+    algorithm = st.selectbox("Choose algorithm:", ["Bubble Sort", "Selection Sort"])
     match algorithm:
         case "Bubble Sort":
             if st.session_state.alg != "Bubble":
                 st.session_state.alg = "Bubble"
                 st.session_state.i = 0
                 bubble_sort()
+        case "Selection Sort":
+            if st.session_state.alg != "Selection":
+                st.session_state.alg = "Selection"
+                st.session_state.i = 0
+                selection_sort()
