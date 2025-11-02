@@ -192,9 +192,44 @@ def m_sort(arr, l, r, ret):
         i += 1
 
 
+# quick sort
+def quick_sort():
+    arr = [i for i in st.session_state.y]
+    ret = []
+    q_sort(arr, 0, len(arr)-1, ret)
+    st.session_state.updates = ret
+
+# helper function for quick sort
+def q_sort(arr, l, r, ret):
+    if l > r:
+        return
+    if l == r:
+        ret.append(("l", l, "blue", "green"))
+        return
+    i = random.randint(l, r)
+    ret.append(("l", i, "blue", "orange"))
+    ret.append(("s", i, r))
+    arr[i], arr[r] = arr[r], arr[i]
+    left = l
+    for j in range(l, r):
+        ret.append(("l", j, "blue", "yellow"))
+        if (arr[j] < arr[r]):
+            ret.append(("s", j, left))
+            arr[j], arr[left] = arr[left], arr[j]
+            ret.append(("l", left, "yellow", "blue"))
+            left += 1
+        else:
+            ret.append(("l", j, "yellow", "blue"))
+    ret.append(("s", r, left))
+    arr[r], arr[left] = arr[left], arr[r]
+    ret.append(("l", left, "orange", "green"))
+    q_sort(arr, l, left-1, ret)
+    q_sort(arr, left+1, r, ret)
+
+
 # dropdown to select algorithm
 with algo:
-    algorithm = st.selectbox("Choose algorithm:", ["Bubble Sort", "Selection Sort", "Insertion Sort", "Merge Sort"])
+    algorithm = st.selectbox("Choose algorithm:", ["Bubble Sort", "Selection Sort", "Insertion Sort", "Merge Sort", "Quick Sort"])
     match algorithm:
         case "Bubble Sort":
             if st.session_state.alg != "Bubble":
@@ -216,3 +251,8 @@ with algo:
                 st.session_state.alg = "Merge"
                 st.session_state.i = 0
                 merge_sort()
+        case "Quick Sort":
+            if st.session_state.alg != "Quick":
+                st.session_state.alg = "Quick"
+                st.session_state.i = 0
+                quick_sort()
