@@ -227,9 +227,59 @@ def q_sort(arr, l, r, ret):
     q_sort(arr, left+1, r, ret)
 
 
+# heap sort
+def heap_sort():
+    arr = [i for i in st.session_state.y]
+    ret = []
+    heapify(arr, 0, ret)
+    for i in range(len(arr) - 1):
+        ret.append(("s", 0, len(arr) - i - 1))
+        arr[0], arr[-i-1] = arr[-i-1], arr[0]
+        ret.append(("l", len(arr) - i - 1, "blue", "green"))
+        h_bubble(arr, 0, ret, len(arr) - i - 1)
+    ret.append(("l", 0, "blue", "green"))
+    st.session_state.updates = ret
+
+# helper function for heap_sort
+def heapify(arr, i, ret):
+    if len(arr) > 2 * i + 2:
+        heapify(arr, 2 * i + 1, ret)
+        heapify(arr, 2 * i + 2, ret)
+    elif len(arr) == 2 * i + 2:
+        heapify(arr, 2 * i + 1, ret)
+    h_bubble(arr, i, ret, len(arr))
+
+def h_bubble(arr, i, ret, n):
+    if n > 2 * i + 2:
+        ret.append(("l", i, "blue", "orange", 2*i+1, "blue", "yellow", 2*i+2, "blue", "yellow"))
+        if arr[2*i+1] > max(arr[i], arr[2*i+2]):
+            ret.append(("s", i, 2*i+1))
+            arr[i], arr[2*i+1] = arr[2*i+1], arr[i]
+            ret.append(("l", i, "yellow", "blue", 2*i+1, "orange", "blue", 2*i+2, "yellow", "blue"))
+            h_bubble(arr, 2*i+1, ret, n)
+        elif arr[2*i+2] > max(arr[i], arr[2*i+1]):
+            ret.append(("s", i, 2*i+2))
+            arr[i], arr[2*i+2] = arr[2*i+2], arr[i]
+            ret.append(("l", i, "yellow", "blue", 2*i+1, "yellow", "blue", 2*i+2, "orange", "blue"))
+            h_bubble(arr, 2*i+2, ret, n)
+        else:
+            ret.append(("l", i, "orange", "blue", 2*i+1, "yellow", "blue", 2*i+2, "yellow", "blue"))
+    elif n == 2 * i + 2:
+        ret.append(("l", i, "blue", "orange", 2*i+1, "blue", "yellow"))
+        if arr[2*i+1] > arr[i]:
+            ret.append(("s", i, 2*i+1))
+            arr[i], arr[2*i+1] = arr[2*i+1], arr[i]
+            ret.append(("l", i, "yellow", "blue", 2*i+1, "orange", "blue"))
+            h_bubble(arr, 2*i+1, ret, n)
+        else:
+            ret.append(("l", i, "orange", "blue", 2*i+1, "yellow", "blue"))
+    else:
+        return
+
+
 # dropdown to select algorithm
 with algo:
-    algorithm = st.selectbox("Choose algorithm:", ["Bubble Sort", "Selection Sort", "Insertion Sort", "Merge Sort", "Quick Sort"])
+    algorithm = st.selectbox("Choose algorithm:", ["Bubble Sort", "Selection Sort", "Insertion Sort", "Merge Sort", "Quick Sort", "Heap Sort"])
     match algorithm:
         case "Bubble Sort":
             if st.session_state.alg != "Bubble":
@@ -256,3 +306,8 @@ with algo:
                 st.session_state.alg = "Quick"
                 st.session_state.i = 0
                 quick_sort()
+        case "Heap Sort":
+            if st.session_state.alg != "Heap":
+                st.session_state.alg = "Heap"
+                st.session_state.i = 0
+                heap_sort()
