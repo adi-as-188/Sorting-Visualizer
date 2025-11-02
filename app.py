@@ -33,6 +33,10 @@ if left.button("Previous") and st.session_state.i > 0:
     if task[0] == "l":
         for i in range(1, len(task), 3):
             st.session_state.color[task[i]] = task[i+1]
+    elif task[0] == "o":
+        for i in range(1, len(task), 5):
+            st.session_state.y[task[i]] = task[i+1]
+            st.session_state.color[task[i]] = task[i+3]
     else:
         st.session_state.y[task[1]], st.session_state.y[task[2]] = st.session_state.y[task[2]], st.session_state.y[task[1]]
         st.session_state.color[task[1]], st.session_state.color[task[2]] = st.session_state.color[task[2]], st.session_state.color[task[1]]
@@ -45,6 +49,10 @@ if right.button("Next") and st.session_state.i < len(st.session_state.updates):
     if task[0] == "l":
         for i in range(1, len(task), 3):
             st.session_state.color[task[i]] = task[i+2]
+    elif task[0] == "o":
+        for i in range(1, len(task), 5):
+            st.session_state.y[task[i]] = task[i+2]
+            st.session_state.color[task[i]] = task[i+4]
     else:
         st.session_state.y[task[1]], st.session_state.y[task[2]] = st.session_state.y[task[2]], st.session_state.y[task[1]]
         st.session_state.color[task[1]], st.session_state.color[task[2]] = st.session_state.color[task[2]], st.session_state.color[task[1]]
@@ -59,6 +67,10 @@ if auto.button("Sort"):
         if task[0] == "l":
             for i in range(1, len(task), 3):
                 st.session_state.color[task[i]] = task[i+2]
+        elif task[0] == "o":
+            for i in range(1, len(task), 5):
+                st.session_state.y[task[i]] = task[i+2]
+                st.session_state.color[task[i]] = task[i+4]
         else:
             st.session_state.y[task[1]], st.session_state.y[task[2]] = st.session_state.y[task[2]], st.session_state.y[task[1]]
             st.session_state.color[task[1]], st.session_state.color[task[2]] = st.session_state.color[task[2]], st.session_state.color[task[1]]
@@ -129,9 +141,60 @@ def insertion_sort():
     st.session_state.updates = ret
 
 
+# merge sort
+def merge_sort():
+    arr = [i for i in st.session_state.y]
+    ret = []
+    m_sort(arr, 0, len(arr)-1, ret)
+    col = ["l"]
+    for i in range(len(arr)):
+        col.append(i)
+        col.append("blue")
+        col.append("green")
+    ret.append(tuple(col))
+    st.session_state.updates = ret
+
+# helper function for merge sort
+def m_sort(arr, l, r, ret):
+    if l == r:
+        return
+    m = (l + r) // 2
+    m_sort(arr, l, m, ret)
+    m_sort(arr, m+1, r, ret)
+    left = arr[l:m+1]
+    right = arr[m+1:r+1]
+    a = b = 0
+    i = l
+    while a < len(left) and b < len(right):
+        if left[a] < right[b]:
+            ret.append(("o", i, arr[i], left[a], "blue", "yellow"))
+            ret.append(("l", i, "yellow", "blue"))
+            arr[i] = left[a]
+            a += 1
+            i += 1
+        else:
+            ret.append(("o", i, arr[i], right[b], "blue", "yellow"))
+            ret.append(("l", i, "yellow", "blue"))
+            arr[i] = right[b]
+            b += 1
+            i += 1
+    while a < len(left):
+        ret.append(("o", i, arr[i], left[a], "blue", "yellow"))
+        ret.append(("l", i, "yellow", "blue"))
+        arr[i] = left[a]
+        a += 1
+        i += 1
+    while b < len(right):
+        ret.append(("o", i, arr[i], right[b], "blue", "yellow"))
+        ret.append(("l", i, "yellow", "blue"))
+        arr[i] = right[b]
+        b += 1
+        i += 1
+
+
 # dropdown to select algorithm
 with algo:
-    algorithm = st.selectbox("Choose algorithm:", ["Bubble Sort", "Selection Sort", "Insertion Sort"])
+    algorithm = st.selectbox("Choose algorithm:", ["Bubble Sort", "Selection Sort", "Insertion Sort", "Merge Sort"])
     match algorithm:
         case "Bubble Sort":
             if st.session_state.alg != "Bubble":
@@ -148,3 +211,8 @@ with algo:
                 st.session_state.alg = "Insertion"
                 st.session_state.i = 0
                 insertion_sort()
+        case "Merge Sort":
+            if st.session_state.alg != "Merge":
+                st.session_state.alg = "Merge"
+                st.session_state.i = 0
+                merge_sort()
