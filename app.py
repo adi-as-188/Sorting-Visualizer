@@ -285,29 +285,35 @@ with algo:
             if st.session_state.alg != "Bubble":
                 st.session_state.alg = "Bubble"
                 st.session_state.i = 0
+                st.session_state.color = ["blue"] * len(st.session_state.color)
                 bubble_sort()
         case "Selection Sort":
             if st.session_state.alg != "Selection":
                 st.session_state.alg = "Selection"
                 st.session_state.i = 0
+                st.session_state.color = ["blue"] * len(st.session_state.color)
                 selection_sort()
         case "Insertion Sort":
             if st.session_state.alg != "Insertion":
                 st.session_state.alg = "Insertion"
                 st.session_state.i = 0
+                st.session_state.color = ["blue"] * len(st.session_state.color)
                 insertion_sort()
         case "Merge Sort":
             if st.session_state.alg != "Merge":
                 st.session_state.alg = "Merge"
                 st.session_state.i = 0
+                st.session_state.color = ["blue"] * len(st.session_state.color)
                 merge_sort()
         case "Quick Sort":
             if st.session_state.alg != "Quick":
                 st.session_state.alg = "Quick"
                 st.session_state.i = 0
+                st.session_state.color = ["blue"] * len(st.session_state.color)
                 quick_sort()
         case "Heap Sort":
             if st.session_state.alg != "Heap":
                 st.session_state.alg = "Heap"
                 st.session_state.i = 0
+                st.session_state.color = ["blue"] * len(st.session_state.color)
                 heap_sort()
